@@ -86,51 +86,48 @@ if (isset($_POST['oturumac'])) {
 }
 
 if (isset($_POST['genelayarkaydet'])) {
-    if (yetkikontrol()!="yetkili") {
+    if (yetkikontrol() != "yetkili") {
         header("location:../index.php");
         exit;
     }
 
-
-    $genelayarkaydet=$db->prepare("UPDATE ayarlar SET
-   site_baslik=:baslik,
-   site_aciklama=:aciklama,
-   site_sahibi=:sahip,
-   mail_onayi=:mail_onayi,
-   duyuru_onayi=:duyuru_onayi where id=1
-   ");
-
-    $ekleme=$genelayarkaydet->execute(array(
-        'baslik' => guvenlik($_POST['site_baslik']),
-        'aciklama' => guvenlik($_POST['site_aciklama']),
-        'sahip' => guvenlik($_POST['site_sahibi']),
-        'mail_onayi' => guvenlik($_POST['mail_onayi']),
-        'duyuru_onayi' => guvenlik($_POST['duyuru_onayi'])
-    ));
-
-
-    if ($_FILES['site_logo']['error']=="0") {
-        $yuklemeklasoru = '../dosyalar';
-        @$gecici_isim = $_FILES['site_logo']["tmp_name"];
-        @$dosya_ismi = $_FILES['site_logo']["name"];
-        $benzersizsayi1=rand(100000,999999);
-        $isim=tum_bosluk_sil($benzersizsayi1.$dosya_ismi);
-        @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-        $son_eklenen_id=$db->lastInsertId();
-
-        $genelayarkaydet=$db->prepare("UPDATE ayarlar SET
-      site_logo=:site_logo where id=1
-      ");
+    try {
+        $genelayarkaydet = $db->prepare("UPDATE ayarlar SET
+            site_baslik=:baslik,
+            site_aciklama=:aciklama,
+            site_sahibi=:sahip,
+            mail_onayi=:mail_onayi,
+            duyuru_onayi=:duyuru_onayi
+            WHERE id=1");
 
         $genelayarkaydet->execute(array(
-            'site_logo' => $isim
+            'baslik' => guvenlik($_POST['site_baslik']),
+            'aciklama' => guvenlik($_POST['site_aciklama']),
+            'sahip' => guvenlik($_POST['site_sahibi']),
+            'mail_onayi' => guvenlik($_POST['mail_onayi']),
+            'duyuru_onayi' => guvenlik($_POST['duyuru_onayi'])
         ));
 
-    }
+        if ($_FILES['site_logo']['error'] == 0) {
+            $yuklemeklasoru = '../dosyalar';
+            $gecici_isim = $_FILES['site_logo']["tmp_name"];
+            $dosya_ismi = $_FILES['site_logo']["name"];
+            $benzersizsayi1 = rand(100000, 999999);
+            $isim = tum_bosluk_sil($benzersizsayi1 . $dosya_ismi);
+            move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
 
-    if ($ekleme) {
+            $genelayarkaydet_logo = $db->prepare("UPDATE ayarlar SET
+                site_logo=:site_logo WHERE id=1");
+
+            $genelayarkaydet_logo->execute(array(
+                'site_logo' => $isim
+            ));
+        }
+
         header("location:../ayarlar?durum=ok");
-    } else {
+        exit;
+    } catch (PDOException $e) {
+        echo "Hata: " . $e->getMessage();
         header("location:../ayarlar?durum=no");
         exit;
     }
@@ -265,7 +262,6 @@ if (isset($_POST['projeguncelle'])) {
     exit;
 }
 
-
 if (isset($_POST['siparisekle'])) {
     if (yetkikontrol()!="yetkili" AND !$api) {
         header("location:../index.php");
@@ -341,9 +337,6 @@ if (isset($_POST['siparisekle'])) {
     }
     exit;
 }
-
-
-
 
 if (isset($_POST['siparisguncelle'])) {
     if (yetkikontrol()!="yetkili" AND !$api) {
@@ -426,26 +419,24 @@ if (isset($_POST['siparisguncelle'])) {
 }
 
 
-
-
 if (isset($_POST['profilguncelle'])) {
-    if (yetkikontrol()!="yetkili" AND !$api) {
-        header("location:../index.php");
+    if (yetkikontrol() != "yetkili" && !$api) {
+        header("location: ../index.php");
         exit;
     }
 
     if ($api) {
-        $_SESSION['kul_id']=guvenlik($_GET['kul_id']);
+        $_SESSION['kul_id'] = guvenlik($_GET['kul_id']);
     }
 
+    $profilguncelle = $db->prepare("UPDATE kullanicilar SET
+        kul_isim = :isim,
+        kul_mail = :mail,
+        kul_telefon = :telefon,
+        kul_unvan = :unvan
+        WHERE kul_id = :kul_id");
 
-    $profilguncelle=$db->prepare("UPDATE kullanicilar SET
-    kul_isim=:isim,
-    kul_mail=:mail,
-    kul_telefon=:telefon,
-    kul_unvan=:unvan,
-    WHERE kul_id=:kul_id");
-    $ekleme=$profilguncelle->execute(array(
+    $ekleme = $profilguncelle->execute(array(
         'isim' => $_POST['kul_isim'],
         'mail' => $_POST['kul_mail'],
         'telefon' => $_POST['kul_telefon'],
@@ -453,52 +444,50 @@ if (isset($_POST['profilguncelle'])) {
         'kul_id' => $_SESSION['kul_id']
     ));
 
-    if (strlen($_POST['kul_sifre'])>2) {
+    if (strlen($_POST['kul_sifre']) > 2) {
+        $profilguncelle_sifre = $db->prepare("UPDATE kullanicilar SET
+            kul_sifre = :kul_sifre
+            WHERE kul_id = :kul_id");
 
-        $profilguncelle=$db->prepare("UPDATE kullanicilar SET
-      kul_sifre=:kul_sifre,
-      WHERE kul_id=:kul_id");
-        $ekleme=$profilguncelle->execute(array(
+        $ekleme_sifre = $profilguncelle_sifre->execute(array(
             'kul_sifre' => sifreleme($_POST['kul_sifre']),
             'kul_id' => $_SESSION['kul_id']
         ));
-
     }
 
-
-    if ($_FILES['kul_logo']['error']==0) {
+    if ($_FILES['kul_logo']['error'] == 0) {
         $yuklemeklasoru = '../dosyalar';
-        @$gecici_isim = $_FILES['kul_logo']["tmp_name"];
-        @$dosya_ismi = $_FILES['kul_logo']["name"];
-        $benzersizsayi=rand(10000,99999).rand(10000,99999);
-        $isim=tum_bosluk_sil($benzersizsayi.$dosya_ismi);
-        @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
+        $gecici_isim = $_FILES['kul_logo']["tmp_name"];
+        $dosya_ismi = $_FILES['kul_logo']["name"];
+        $benzersizsayi = rand(10000, 99999) . rand(10000, 99999);
+        $isim = tum_bosluk_sil($benzersizsayi . $dosya_ismi);
+        move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
 
-        $profilguncelle=$db->prepare("UPDATE kullanicilar SET
-    kul_logo=:logo WHERE kul_id=:kul_id");
-        $ekleme=$profilguncelle->execute(array(
+        $profilguncelle_logo = $db->prepare("UPDATE kullanicilar SET
+            kul_logo = :logo WHERE kul_id = :kul_id");
+
+        $ekleme_logo = $profilguncelle_logo->execute(array(
             'kul_id' => $_SESSION['kul_id'],
             'logo' => $isim
         ));
     }
 
-    if ($ekleme) {
+    if ($ekleme || $ekleme_sifre || $ekleme_logo) {
         if ($api) {
             echo json_encode(['durum' => 'ok']);
         } else {
-            header("location:../profil?durum=ok");
+            header("location: ../profil?durum=ok");
         }
     } else {
         if ($api) {
-            echo json_encode(['durum' => 'no','mesaj' => 'İşlem Başarısız','hata' => implode(",",$profilguncelle->errorInfo())]);
+            echo json_encode(['durum' => 'no', 'mesaj' => 'İşlem Başarısız', 'hata' => implode(",", $profilguncelle->errorInfo())]);
         } else {
-            header("location:../profil?durum=no");
+            header("location: ../profil?durum=no");
         }
     }
     exit;
-
-
 }
+
 
 
 
