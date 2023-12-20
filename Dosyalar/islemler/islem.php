@@ -85,53 +85,7 @@ if (isset($_POST['oturumac'])) {
     exit;
 }
 
-if (isset($_POST['genelayarkaydet'])) {
-    if (yetkikontrol() != "yetkili") {
-        header("location:../index.php");
-        exit;
-    }
 
-    try {
-        $genelayarkaydet = $db->prepare("UPDATE ayarlar SET
-            site_baslik=:baslik,
-            site_aciklama=:aciklama,
-            site_sahibi=:sahip,
-            mail_onayi=:mail_onayi,
-            duyuru_onayi=:duyuru_onayi
-            WHERE id=1");
-
-        $genelayarkaydet->execute(array(
-            'baslik' => guvenlik($_POST['site_baslik']),
-            'aciklama' => guvenlik($_POST['site_aciklama']),
-            'sahip' => guvenlik($_POST['site_sahibi']),
-            'mail_onayi' => guvenlik($_POST['mail_onayi']),
-            'duyuru_onayi' => guvenlik($_POST['duyuru_onayi'])
-        ));
-
-        if ($_FILES['site_logo']['error'] == 0) {
-            $yuklemeklasoru = '../dosyalar';
-            $gecici_isim = $_FILES['site_logo']["tmp_name"];
-            $dosya_ismi = $_FILES['site_logo']["name"];
-            $benzersizsayi1 = rand(100000, 999999);
-            $isim = tum_bosluk_sil($benzersizsayi1 . $dosya_ismi);
-            move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-
-            $genelayarkaydet_logo = $db->prepare("UPDATE ayarlar SET
-                site_logo=:site_logo WHERE id=1");
-
-            $genelayarkaydet_logo->execute(array(
-                'site_logo' => $isim
-            ));
-        }
-
-        header("location:../ayarlar?durum=ok");
-        exit;
-    } catch (PDOException $e) {
-        echo "Hata: " . $e->getMessage();
-        header("location:../ayarlar?durum=no");
-        exit;
-    }
-}
 
 if (isset($_POST['projeekle'])) {
     if (yetkikontrol()!="yetkili" AND !$api) {
@@ -488,8 +442,53 @@ if (isset($_POST['profilguncelle'])) {
     exit;
 }
 
+if (isset($_POST['genelayarkaydet'])) {
+    if (yetkikontrol() != "yetkili") {
+        header("location: ../index.php");
+        exit;
+    }
 
+    $mail_onayi = isset($_POST['mail_onayi']) ? guvenlik($_POST['mail_onayi']) : 0;
+    $duyuru_onayi = isset($_POST['duyuru_onayi']) ? guvenlik($_POST['duyuru_onayi']) : 0;
 
+    $genelayarkaydet = $db->prepare("UPDATE ayarlar SET
+        site_baslik = :baslik,
+        site_aciklama = :aciklama,
+        site_sahibi = :sahip,
+        mail_onayi = :mail_onayi,
+        duyuru_onayi = :duyuru_onayi
+        WHERE id = 1");
+
+    $ekleme = $genelayarkaydet->execute(array(
+        'baslik' => guvenlik($_POST['site_baslik']),
+        'aciklama' => guvenlik($_POST['site_aciklama']),
+        'sahip' => guvenlik($_POST['site_sahibi']),
+        'mail_onayi' => $mail_onayi,
+        'duyuru_onayi' => $duyuru_onayi
+    ));
+
+    if ($_FILES['site_logo']['error'] == 0) {
+        $yuklemeklasoru = '../dosyalar';
+        $dosya_ismi = $_FILES['site_logo']['name'];
+        $benzersizsayi1 = rand(100000, 999999);
+        $isim = tum_bosluk_sil($benzersizsayi1 . $dosya_ismi);
+
+        move_uploaded_file($_FILES['site_logo']['tmp_name'], "$yuklemeklasoru/$isim");
+
+        if ($ekleme) {
+            $genelayarkaydet_logo = $db->prepare("UPDATE ayarlar SET site_logo = :site_logo WHERE id = 1");
+            $genelayarkaydet_logo->execute(array('site_logo' => $isim));
+        }
+    }
+
+    if ($ekleme) {
+        header("location: ../ayarlar?durum=ok");
+        exit;
+    } else {
+        echo "Error: " . implode(",", $genelayarkaydet->errorInfo());
+        exit;
+    }
+}
 
 if (isset($_POST['siparissilme'])) {
 
