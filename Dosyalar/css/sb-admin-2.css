@@ -12000,7 +12000,7 @@ footer.sticky-footer {
 
 footer.sticky-footer .copyright {
   line-height: 1;
-  font-size: 0;
+  font-size: 0; !important;
 }
 
 body.sidebar-toggled footer.sticky-footer {

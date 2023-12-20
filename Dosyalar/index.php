@@ -332,9 +332,9 @@ include 'footer.php';
 
 <script>
 	var dataTables = $('#dataTable').DataTable({
-    "ordering": true,  //Tabloda sıralama özelliği gözüksün mü? true veya false
-    "searching": true,  //Tabloda arama yapma alanı gözüksün mü? true veya false
-    "lengthChange": true, //Tabloda öğre gösterilme gözüksün mü? true veya false
+    "ordering": true,
+    "searching": true,
+    "lengthChange": true,
     "info": true,
     "lengthMenu": [ 5, 10, 25, 50, 75, 100 ],
     dom: "<'row '<'col-md-6'l><'col-md-6'f><'col-md-4 d-none d-print-block'B>>rtip",
@@ -343,9 +343,9 @@ include 'footer.php';
 
 <script>
 	var dataTables = $('#siparistablosu').DataTable({
-    "ordering": true,  //Tabloda sıralama özelliği gözüksün mü? true veya false
-    "searching": true,  //Tabloda arama yapma alanı gözüksün mü? true veya false
-    "lengthChange": true, //Tabloda öğre gösterilme gözüksün mü? true veya false
+    "ordering": true,
+    "searching": true,
+    "lengthChange": true,
     "info": true,
     "lengthMenu": [ 5, 10, 25, 50, 75, 100 ],
     dom: "<'row '<'col-md-6'l><'col-md-6'f><'col-md-4 d-none d-print-block'B>>rtip",

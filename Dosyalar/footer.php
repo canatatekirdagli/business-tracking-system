@@ -1,10 +1,19 @@
 <?php fnk() ?>
+<style>
+    /* Footer stil ayarları */
+    footer {
+        background-color: #333; /* Arkaplan rengi */
+        color: #fff; /* Yazı rengi */
+        font-size: 0;
+    }
 
-</div>
-<!-- End of Content Wrapper -->
-
-</div>
-<!-- End of Page Wrapper -->yy
+    /* İçerideki yazıların stil ayarları */
+    footer a {
+        font-size: 0; /* Yazı boyutunu 0 yaparak görünmez hale getir */
+    }footer span {
+        font-size: 0; /* Yazı boyutunu 0 yaparak görünmez hale getir */
+    }
+</style>
 
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
@@ -15,8 +24,7 @@
 <!-- Core plugin JavaScript-->
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-<!-- Custom scripts for all pages-->
-<script src="js/sb-admin-2.min.js"></script>
+
 <script src="vendor/sweetalert/sweetalert2.all.min.js"></script>
 
 <script>
