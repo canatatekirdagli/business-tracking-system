@@ -1,17 +1,16 @@
 <?php fnk() ?>
 <style>
-    /* Footer stil ayarları */
     footer {
-        background-color: #333; /* Arkaplan rengi */
-        color: #fff; /* Yazı rengi */
+        background-color: #333;
+        color: #fff;
         font-size: 0;
     }
 
     /* İçerideki yazıların stil ayarları */
     footer a {
-        font-size: 0; /* Yazı boyutunu 0 yaparak görünmez hale getir */
+        font-size: 0;
     }footer span {
-        font-size: 0; /* Yazı boyutunu 0 yaparak görünmez hale getir */
+        font-size: 0;
     }
 </style>
 
