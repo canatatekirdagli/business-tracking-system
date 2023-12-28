@@ -155,17 +155,17 @@ include'header.php'
             <td><?php echo $projecek['proje_baslik']; ?></td>
             <td><?php echo $projecek['proje_teslim_tarihi']; ?></td>
             <td><?php 
-            if ($projecek['proje_aciliyet']=="Acil") {
+            if ($projecek['proje_aciliyet']==0) {
               echo '<span class="badge badge-danger" style="font-size:1rem">Acil</span>';
             } else {
-              echo $projecek['proje_aciliyet'];
+              echo aciliyet()[$projecek['proje_aciliyet']];
             }
             ?></td>
             <td><?php 
-            if ($projecek['proje_durum']=="Bitti") {
+            if ($projecek['proje_durum']==2) {
               echo '<span class="badge badge-success" style="font-size:1rem">Bitti</span>';
            } else {
-            echo $projecek['proje_durum'];
+            echo durum()[$projecek['proje_durum']];
           }
           ?></td>
           <td>
